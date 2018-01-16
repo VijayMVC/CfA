@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX UNX_Lead_Email ON Lead (Email) WITH (IGNORE_DUP_KEY = ON);
