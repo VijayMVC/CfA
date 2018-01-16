@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<DTS:ConnectionManager xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:ObjectName="SF1"
+  DTS:DTSID="{6355F0E0-A308-4051-9E9B-6367A4F1B5FB}"
+  DTS:CreationName="SALESFORCE TF">
+  <DTS:ObjectData>
+    <TaskFactorySalesForceConnectionManager
+      ConnectionString="ProxyAuthorizationScheme=0;Username=g.mower@snhu.edu;ServerURL=;Timeout=60;UseProxy=False;ProxyHost=;ProxyUserName=;ProxyDomain=;ProxyPort=0;ReuseConnectionAcrossAllTasks=True;">
+      <Password
+        Sensitive="1" xmlns="www.microsoft.com/SqlServer/Dts">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAaUkivXqI502+x3djqbwiGQAAAAACAAAAAAADZgAAwAAAABAAAACvzf6iSexFJYFJ4C9fT0M5AAAAAASAAACgAAAAEAAAAPF491PqS7d/Fo1HVn2HnXVwAAAAuXejSHyz6DhRW45MVg1uhSsPW0OOCftRtjIkth98c/tZWgdkZxWjIAjIpCYiy7M/HPOrQAIGwC4IhXcY86/0jvsseDM/0gmV74pPV6Ad6ST/V/gx7PssQ/BzupuSDOtR1wPMHeUAWCw0czlq5Y2n4hQAAAAIDb9P+JygHhasTH2r2kZSZ6j01g==</Password>
+    </TaskFactorySalesForceConnectionManager>
+  </DTS:ObjectData>
+</DTS:ConnectionManager>
