@@ -1,4 +1,4 @@
-CREATE TABLE [dbo].[Student_Project_Action](
+CREATE TABLE [dbo].[Student_Project_Action__c](
 	[Id] [nvarchar](18) NULL,
 	[Name] [nvarchar](121) NULL,
 	[CreatedDate] [datetime] NULL,
