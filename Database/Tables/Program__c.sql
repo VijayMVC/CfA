@@ -1,4 +1,4 @@
-CREATE TABLE [dbo].[Program](
+CREATE TABLE [dbo].[Program__c](
 	[Id] [nvarchar](18) NULL,
 	[IsDeleted] [bit] NULL,
 	[Name] [nvarchar](121) NULL,
