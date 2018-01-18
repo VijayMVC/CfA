@@ -1,4 +1,4 @@
-create procedure FactPerson_AARPL_Update as
+ALTER procedure [dbo].[FactPerson_AARPL_Update] as
 
 update FactPerson
 set FirstAcademicProgram = y.FirstAcademicProgram,
@@ -28,3 +28,6 @@ from (select s.ColleagueID,
 where  RowNum = 1) y
 where factPerson.ContactColleague_ID__c = y.ColleagueID
 and FactPerson.FirstProgramDegreeCode is null
+GO
+
+
