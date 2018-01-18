@@ -1,4 +1,4 @@
-CREATE procedure [dbo].[FactPerson_Update] as
+alter procedure [dbo].[FactPerson_Update] as
 
 exec ETL_Log_Set @Operation = 'FactPerson_Lead_Update'
 	exec FactPerson_Lead_Update;
