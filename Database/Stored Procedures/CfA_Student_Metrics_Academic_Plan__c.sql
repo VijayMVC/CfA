@@ -102,19 +102,22 @@ inner join (Select WhoID, max(Createddate) NextStepCreatedDate
 where Next_Steps__C is not null;
        
 
-SELECT Student__C, case when Version_Number__C = '2.0' then 'Yes' else 'No' end Sixified
+SELECT Student__C, case when Version_Number__C in ('2.0','1.0') and Is_Most_Recent_Version__c = 'Yes'
+then 'Yes' else 'No' end Sixified
 into #Sixified
-    FROM [COCE-MSR_TEST-LS].MSR_TEST.sf.[Program__c] p
-    left join [COCE-MSR_TEST-LS].MSR_TEST.sf.Student_Program__C sp on p.id = sp.Program__C
-    inner join [COCE-MSR_TEST-LS].MSR_TEST.sf.FactPerson fp on fp.ContactActive_Student_Program__C = sp.id
-    where p.degree_type__c like 'Associates%';
+FROM [COCE-MSR_TEST-LS].MSR_TEST.sf.[Program__c] p
+left join [COCE-MSR_TEST-LS].MSR_TEST.sf.Student_Program__C sp on p.id = sp.Program__C
+inner join [COCE-MSR_TEST-LS].MSR_TEST.sf.FactPerson fp on fp.ContactActive_Student_Program__C = sp.id
+														and fp.Contactid = sp.student__c
+where p.degree_type__c like 'Associates%'
+group by Student__C, case when Version_Number__C in ('2.0','1.0') and Is_Most_Recent_Version__c = 'Yes' then 'Yes' else 'No' end;
 
 select sp.Student__C, count(1) Number_of_Purple_Projects_Completed
 into #Purple
 from [COCE-MSR_TEST-LS].MSR_TEST.sf.Student_Project_Action spa
 inner join [COCE-MSR_TEST-LS].MSR_TEST.sf.Student_Project sp on sp.id = spa.Student_Project__C
 inner join [COCE-MSR_TEST-LS].MSR_TEST.sf.Program_Goal pg on pg.id = sp.Program_Goal__C
-                                                                                                  and Path_Type__c = 'Purple'
+                                                                                                  and pg.Path_Type__c = 'Purple'
 where spa.Status_End__C = 'Mastered'
 group by sp.Student__C;
 
@@ -134,7 +137,7 @@ FROM [AARDW].[AARPL].[Student] ST;
 
 create nonclustered index IDX_#STUD_ColleagueID on #STUD (ColleagueID) include (CurrentAccountsReceivableBalance, SatisfactoryAcademicProgressResultCode);
 
-SELECT '=HYPERLINK("https://cfa.my.salesforce.com/' + left(c.ID, 15) + '", "' + c.Name + '")' StudentPreferredName ,
+SELECT '=HYPERLINK("https://cfa.my.salesforce.com/' + left(c.ID, 15) + '", "' + c.Name + '")' Hyperlink ,
             c.Colleague_ID__c ,
             CASE WHEN SR.RestrictionCode = 'CFAW'
                       AND RestrictionEndDate IS NULL THEN 'CFAW'
@@ -233,18 +236,15 @@ END AS OnBoarding_Next_Month ,
 CASE WHEN C.ASP_Start_Date__c = DATEADD(d, 1, EOMONTH(GETDATE())) THEN 'OnBoarding Next Month'
      WHEN C.[Colleague_Next_Term_Start_Date_Code__c] = RIGHT(CAST(YEAR(DATEADD(d, 1, EOMONTH(GETDATE()))) AS VARCHAR), 2)
                                                         + 'CFA' + RIGHT('00' + CAST(MONTH(DATEADD(d, 1, EOMONTH(GETDATE()))) AS VARCHAR), 2) THEN 'Possible Renrolls Next Month'
-     WHEN datediff(m, C.ASP_Start_date__C, getdate()) < 1 and sp.is_readmission__c = 0 then '1st Month Student'
-       WHEN C.ASP_Start_date__C > DATEADD(m, 1, EOMONTH(GETDATE())) then 'Future Student'
+     WHEN datediff(m, C.ASP_Start_date__C,getdate()) = 0 and sp.is_readmission__c = 0 then '1st Month Student'
+       WHEN C.ASP_Start_date__C > DATEADD(d, 1, EOMONTH(GETDATE())) then 'Future Student'
        ELSE 'Continuing Student'
 END AS 'Description'
 into #SF
 FROM SalesforceStg.dbo.Student_Program__c SP
 LEFT JOIN SalesforceStg.dbo.Academic_Plan__c AP ON SP.Id = AP.Student_Program__c
                                             AND AP.Term_Start_Date__c = SP.Active_Term_Start_Date__c
-                                            AND Type__c = 'New'
-                                            OR SP.Id = AP.Student_Program__c
-                                            AND AP.Term_Start_Date__c = SP.Active_Term_Start_Date__c
-                                            AND Type__c IS NULL
+                                            AND (Type__c = 'New' OR Type__c IS NULL)
 INNER JOIN SalesforceStg.dbo.Contact C ON SP.Student__c = C.Id
 INNER JOIN SalesforceStg.[dbo].[User] U ON C.Primary_Coach__c = U.Id
 INNER JOIN SalesforceStg.dbo.Account A ON C.AccountId = A.Id
@@ -258,6 +258,7 @@ WHERE SP.Status__c IN ( 'Enrolled', 'Pending Grad Review', 'Registered' )
 AND C.Active_Student_Program_Status__c IN ( 'Enrolled', 'Pending Grad Review', 'Registered' )
 AND U.Manager_Full_Name__c IN ( 'Michael Miller', 'Andrea Bruneau', 'Chantel Freeman' ,'Nathan Szydlo' )
 AND A.Name != 'SW test Account'
+--AND C.Colleague_ID__c = '1458021'
 
      
 SELECT   SPROJ.Student__c ,
@@ -284,17 +285,9 @@ FROM     [SalesforceStg].[dbo].[Student_Project__c] SPROJ
 WHERE    Date_Mastered__c IS NOT NULL
 GROUP BY SPROJ.Student__c
 
---SELECT s.colleagueID, 'Yes' HasFincialAidCurrentTerm
---into #FA
---FROM [AARDW].[AARPL].[StudentTermFinancialAidSummary] sfa
---inner join [AARDW].[AARPL].student s on sfa.Student_SK = s.Student_SK
---inner join AARDW.AARPL.Term t on t.Term = sfa.Term
---                                                and IsOngoingTerm = 1
---where sfa.HasFederalAid = 1;
-
 SELECT sf.Colleague_ID__c 'Colleague ID',
        sf.Last_First_Name__c 'Last First Name' ,
-       AARPL.StudentPreferredName 'Student Preferred Name',
+       AARPL.Hyperlink,
        sf.LastName,
        sf.FirstName,
        sf.Estimated_Time_Zone__c 'Estimated Time Zone' ,
@@ -303,7 +296,8 @@ SELECT sf.Colleague_ID__c 'Colleague ID',
           case when datediff(d, AARPL.CreatedDate, getdate()) > 30 then 'over 30 days'
                when datediff(d, AARPL.CreatedDate, getdate()) > 14 then '15 - 30 days'
                when datediff(d, AARPL.CreatedDate, getdate()) > 9 then '9 - 14 days'
-                     Else '0 - 9 days'
+               when datediff(d, AARPL.CreatedDate, getdate()) > -1 then '0 - 9 days'      
+			   Else 'no call'
               end  'Last Call Categories', 
        ( DATEDIFF(d , CONVERT(DATETIME, AARPL.CreatedDate), CONVERT(DATETIME, CURRENT_TIMESTAMP))) 'Number of Days Since Last Call', 
           AARPL.CallDisposition 'Call Disposition' ,
@@ -354,9 +348,9 @@ SELECT sf.Colleague_ID__c 'Colleague ID',
        sf.SFDC_Contact_ID__c 'SFDC Contact ID' ,
           sf.Possible_ReEnroll_Next_Month ,
        sf.OnBoarding_Next_Month ,
-          AARPL.Call_Duration_in_Minutes__c 'Call Curation in Minutes' ,
+          AARPL.Call_Duration_in_Minutes__c 'Call Duration in Minutes' ,
        sf.Description,
-          p.Number_of_Purple_Projects_Completed 'Number of Purple Goals Completed'
+          p.Number_of_Purple_Projects_Completed
           -- ,isnull(fa.HasFincialAidCurrentTerm, 'No')  HasFincialAidCurrentTerm
 FROM   #SF sf
 LEFT JOIN #ODS ODS ON sf.Colleague_ID__c = ODS.STUDENTS_ID

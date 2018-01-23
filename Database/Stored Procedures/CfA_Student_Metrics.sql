@@ -10,6 +10,7 @@ set noexec off
 go
 
 CREATE PROC [dbo].[CfA_Student_Metrics]
+
 SET NOCOUNT ON;
 
 IF OBJECT_ID('tempdb.dbo.#ODS', 'U') IS NOT NULL
@@ -75,7 +76,7 @@ SELECT t.WhoId ,
        t.OwnerId ,
        MAX(t.CreatedDate) AS CreatedDate
 INTO #WHOID
-FROM task t
+FROM [COCE-MSR_TEST-LS].MSR_TEST.sf.task t
 WHERE t.CallObject IS NOT NULL
 GROUP BY t.WhoId,
            t.OwnerId;
@@ -84,16 +85,16 @@ GROUP BY t.WhoId,
 SELECT t.WhoId ,
        datediff(d, MAX(t.CreatedDate), getdate()) AS DaysSinceLastCall
 into #LastCall
-FROM task t
+FROM [COCE-MSR_TEST-LS].MSR_TEST.sf.task t
 WHERE t.CallObject IS NOT NULL
 GROUP BY t.WhoId;
        
 
 select t.WhoID, t.Next_Steps__C, X.NextStepCreatedDate
 into #NextStep
-FROM task t
+FROM [COCE-MSR_TEST-LS].MSR_TEST.sf.task t
 inner join (Select WhoID, max(Createddate) NextStepCreatedDate
-            FROM task t
+            FROM [COCE-MSR_TEST-LS].MSR_TEST.sf.task t
             where Next_Steps__C is not null
             group by WhoID) x on x.WhoID = t.WhoID
                               and x.NextStepCreatedDate =  t.CreatedDate
@@ -103,18 +104,18 @@ where Next_Steps__C is not null;
 SELECT Student__C, case when Version_Number__C in ('2.0','1.0') and Is_Most_Recent_Version__c = 'Yes'
 then 'Yes' else 'No' end Sixified
 into #Sixified
-FROM[Program__c] p
-left join Student_Program__C sp on p.id = sp.Program__C
-inner join FactPerson fp on fp.ContactActive_Student_Program__C = sp.id
+FROM [COCE-MSR_TEST-LS].MSR_TEST.sf.[Program__c] p
+left join [COCE-MSR_TEST-LS].MSR_TEST.sf.Student_Program__C sp on p.id = sp.Program__C
+inner join [COCE-MSR_TEST-LS].MSR_TEST.sf.FactPerson fp on fp.ContactActive_Student_Program__C = sp.id
 														and fp.Contactid = sp.student__c
 where p.degree_type__c like 'Associates%'
 group by Student__C, case when Version_Number__C in ('2.0','1.0') and Is_Most_Recent_Version__c = 'Yes' then 'Yes' else 'No' end;
 
 select sp.Student__C, count(1) Number_of_Purple_Projects_Completed
 into #Purple
-from Student_Project_Action__c spa
-inner join Student_Project__c sp on sp.id = spa.Student_Project__C
-inner join Program_Goal__c pg on pg.id = sp.Program_Goal__C
+from [COCE-MSR_TEST-LS].MSR_TEST.sf.Student_Project_Action spa
+inner join [COCE-MSR_TEST-LS].MSR_TEST.sf.Student_Project sp on sp.id = spa.Student_Project__C
+inner join [COCE-MSR_TEST-LS].MSR_TEST.sf.Program_Goal pg on pg.id = sp.Program_Goal__C
                                                                                                   and pg.Path_Type__c = 'Purple'
 where spa.Status_End__C = 'Mastered'
 group by sp.Student__C;
@@ -122,9 +123,8 @@ group by sp.Student__C;
 SELECT SPROJ.[Student__c] ,
        AVG([Number_Submitted__c]) AS AVGSUBMA
 into #SUB
-FROM [Student_Project__c] SPROJ
-WHERE 1=1 
-and SPROJ.[Date_Mastered__c] IS NOT NULL
+FROM [SalesforceStg].[dbo].[Student_Project__c] SPROJ
+WHERE SPROJ.[Date_Mastered__c] IS NOT NULL
 AND SPROJ.studentId_projectId__c NOT LIKE '%TEAM%'
 GROUP BY SPROJ.[Student__c];
 
@@ -132,7 +132,7 @@ SELECT ST.ColleagueID ,
             ST.CurrentAccountsReceivableBalance ,
             ST.SatisfactoryAcademicProgressResultCode
 into #STUD
-FROM [COCE-LSTNR,50333].[AARDW].[AARPL].[Student] ST;
+FROM [AARDW].[AARPL].[Student] ST;
 
 create nonclustered index IDX_#STUD_ColleagueID on #STUD (ColleagueID) include (CurrentAccountsReceivableBalance, SatisfactoryAcademicProgressResultCode);
 
@@ -154,7 +154,7 @@ SELECT '=HYPERLINK("https://cfa.my.salesforce.com/' + left(c.ID, 15) + '", "' + 
             t.CreatedDate
        into #AARPL
     FROM [COCE-MSR_TEST-LS].MSR_TEST.sf.task t
-    LEFT JOIN Contact c ON c.Id = t.WhoId
+    LEFT JOIN SalesforceStg.dbo.Contact c ON c.Id = t.WhoId
                                           AND c.Name IS NOT NULL
     INNER JOIN #WHOID x ON x.WhoId = t.WhoId
                         AND x.OwnerId = c.Primary_Coach__c
@@ -163,10 +163,10 @@ SELECT '=HYPERLINK("https://cfa.my.salesforce.com/' + left(c.ID, 15) + '", "' + 
     LEFT JOIN #Sixified s on s.Student__C = t.WhoId
     LEFT JOIN #LastCall lc on lc.WhoID = t.WHoID
     LEFT JOIN SalesforceStg.dbo.[User] ou ON ou.Id = c.Primary_Coach__c
-    LEFT JOIN [COCE-LSTNR,50333].AARDW.AARPL.BusinessEntity be ON c.Colleague_ID__c = be.ColleagueID
-    LEFT JOIN [COCE-LSTNR,50333].AARDW.AARPL.StudentRestriction SR ON be.BusinessEntity_SK = SR.Student_SK
-																   AND SR.RestrictionCode IN ('CFAW','CFAAS')
-																   AND SR.IsActiveRestriction = 1
+    LEFT JOIN AARDW.AARPL.BusinessEntity be ON c.Colleague_ID__c = be.ColleagueID
+    LEFT JOIN AARDW.AARPL.StudentRestriction SR ON be.BusinessEntity_SK = SR.Student_SK
+                                                AND SR.RestrictionCode IN ('CFAW','CFAAS')
+                                                AND SR.IsActiveRestriction = 1
      WHERE t.CallObject IS NOT NULL
      
 SELECT C.Id ,
@@ -235,19 +235,19 @@ END AS OnBoarding_Next_Month ,
 CASE WHEN C.ASP_Start_Date__c = DATEADD(d, 1, EOMONTH(GETDATE())) THEN 'OnBoarding Next Month'
      WHEN C.[Colleague_Next_Term_Start_Date_Code__c] = RIGHT(CAST(YEAR(DATEADD(d, 1, EOMONTH(GETDATE()))) AS VARCHAR), 2)
                                                         + 'CFA' + RIGHT('00' + CAST(MONTH(DATEADD(d, 1, EOMONTH(GETDATE()))) AS VARCHAR), 2) THEN 'Possible Renrolls Next Month'
-     WHEN datediff(m, C.ASP_Start_date__C,getdate()) < 1 and sp.is_readmission__c = 0 then '1st Month Student'
-       WHEN C.ASP_Start_date__C > DATEADD(d, 2, EOMONTH(GETDATE())) then 'Future Student'
+     WHEN datediff(m, C.ASP_Start_date__C,getdate()) = 0 and sp.is_readmission__c = 0 then '1st Month Student'
+       WHEN C.ASP_Start_date__C > DATEADD(d, 1, EOMONTH(GETDATE())) then 'Future Student'
        ELSE 'Continuing Student'
 END AS 'Description'
 into #SF
-FROM Student_Program__c SP
-LEFT JOIN Academic_Plan__c AP ON SP.Id = AP.Student_Program__c
+FROM SalesforceStg.dbo.Student_Program__c SP
+LEFT JOIN SalesforceStg.dbo.Academic_Plan__c AP ON SP.Id = AP.Student_Program__c
                                             AND AP.Term_Start_Date__c = SP.Active_Term_Start_Date__c
                                             AND (Type__c = 'New' OR Type__c IS NULL)
-INNER JOIN Contact C ON SP.Student__c = C.Id
-INNER JOIN [User] U ON C.Primary_Coach__c = U.Id
-INNER JOIN Account A ON C.AccountId = A.Id
-LEFT JOIN [Student_Program_Term__c] SPT ON SP.Id = SPT.[Student_Program__c]
+INNER JOIN SalesforceStg.dbo.Contact C ON SP.Student__c = C.Id
+INNER JOIN SalesforceStg.[dbo].[User] U ON C.Primary_Coach__c = U.Id
+INNER JOIN SalesforceStg.dbo.Account A ON C.AccountId = A.Id
+LEFT JOIN SalesforceStg.[dbo].[Student_Program_Term__c] SPT ON SP.Id = SPT.[Student_Program__c]
                                                         AND SPT.Start_Date__c > DATEADD(mm, -6, GETDATE())
                                                         AND (SPT.Status__c = 'In Progress'
                                                         OR SPT.Status__c IS NULL )
@@ -257,20 +257,20 @@ WHERE SP.Status__c IN ( 'Enrolled', 'Pending Grad Review', 'Registered' )
 AND C.Active_Student_Program_Status__c IN ( 'Enrolled', 'Pending Grad Review', 'Registered' )
 AND U.Manager_Full_Name__c IN ( 'Michael Miller', 'Andrea Bruneau', 'Chantel Freeman' ,'Nathan Szydlo' )
 AND A.Name != 'SW test Account'
---AND C.Colleague_ID__c = '1455289'
+--AND C.Colleague_ID__c = '1458021'
 
      
 SELECT   SPROJ.Student__c ,
               MIN(Date_Submitted__c) min_Date_Submitted__c
 into #XSF
-     FROM     [Student_Project__c] SPROJ
+     FROM     [SalesforceStg].[dbo].[Student_Project__c] SPROJ
      WHERE    Date_Submitted__c IS NOT NULL
      GROUP BY SPROJ.Student__c 
      
 SELECT   SPROJ.Student__c ,
             MIN(Date_Submitted__c) min_ASP_Date_Submitted__c
 into #YSF
-FROM  [Student_Project__c] SPROJ
+FROM  [SalesforceStg].[dbo].[Student_Project__c] SPROJ
 LEFT JOIN #SF sf ON SPROJ.Student__c = sf.Id
 WHERE Date_Submitted__c IS NOT NULL
 AND Date_Submitted__c >= sf.ASP_Start_Date__c
@@ -280,8 +280,8 @@ SELECT SPROJ.Student__c ,
        MAX(Date_Mastered__c) max_Date_Mastered__c ,
        DATEDIFF(d, MAX(Date_Mastered__c), GETDATE()) NumberOfDaysSinceMastered
 into #ZSF
-FROM [Student_Project__c] SPROJ
-WHERE Date_Mastered__c IS NOT NULL
+FROM     [SalesforceStg].[dbo].[Student_Project__c] SPROJ
+WHERE    Date_Mastered__c IS NOT NULL
 GROUP BY SPROJ.Student__c
 
 SELECT sf.Colleague_ID__c 'Colleague ID',
