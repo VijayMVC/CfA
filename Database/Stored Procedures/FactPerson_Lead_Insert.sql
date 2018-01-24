@@ -1,4 +1,15 @@
-CREATE procedure [dbo].[FactPerson_lead_insert] as
+if exists (select 1 from sys.objects where object_id = object_id('dbo.FactPerson_lead_insert'))
+   set noexec on
+go
+create procedure FactPerson_lead_insert as
+begin
+   select 1 as [not yet implemented]
+end
+go
+set noexec off
+go
+
+alter procedure [dbo].[FactPerson_lead_insert] as
 
 insert into FactPerson 
 (LeadId, 
