@@ -1,4 +1,4 @@
-ALTER procedure [dbo].[FactPerson_AARPL_Update] as
+ALTER procedure [FactPerson_AARPL_Update] as
 
 update FactPerson
 set FirstAcademicProgram = y.FirstAcademicProgram,
