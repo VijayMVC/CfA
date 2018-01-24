@@ -140,7 +140,10 @@ CREATE TABLE [dbo].[Student_Project__c](
 	[Next_Version__c] [nvarchar](18) NULL,
 	[Previous_Version__c] [nvarchar](18) NULL,
 	[Version_Notes__c] [nvarchar](max) NULL,
-	[Version_Number__c] [float] NULL
+	[Version_Number__c] [float] NULL,
+	Date_Mastered__c date,
+	Date_Submitted__c datetime,
+	Number_Submitted__c float
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 

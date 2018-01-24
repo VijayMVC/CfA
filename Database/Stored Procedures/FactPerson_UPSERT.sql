@@ -1,4 +1,15 @@
-CREATE procedure FactPerson_Upsert as
+if exists (select 1 from sys.objects where object_id = object_id('dbo.FactPerson_Upsert'))
+   set noexec on
+go
+create procedure FactPerson_Upsert as
+begin
+   select 1 as [not yet implemented]
+end
+go
+set noexec off
+go
+
+alter procedure FactPerson_Upsert as
 
 -- Lead Source
 exec ETL_Log_Set @Operation = 'FactPerson_Lead_Insert'

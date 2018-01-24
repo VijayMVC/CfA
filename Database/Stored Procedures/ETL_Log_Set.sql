@@ -1,4 +1,15 @@
-create procedure ETL_Log_Set @Operation sysname as
+if exists (select 1 from sys.objects where object_id = object_id('dbo.ETL_Log_Set'))
+   set noexec on
+go
+create procedure ETL_Log_Set as
+begin
+   select 1 as [not yet implemented]
+end
+go
+set noexec off
+go
+
+alter procedure ETL_Log_Set @Operation sysname as
 
 declare @DateStarted datetime;
 declare @DateCompleted datetime;
