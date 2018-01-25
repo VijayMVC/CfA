@@ -1,7 +1,7 @@
-if exists (select 1 from sys.objects where object_id = object_id('dbo.GetCFAADVISORCASELOAD'))
+if exists (select 1 from sys.objects where object_id = object_id('dbo.AdvisorCaseLoad_get'))
    set noexec on
 go
-create procedure dbo.[GetCFAADVISORCASELOAD] as
+create procedure dbo.[AdvisorCaseLoad_get] as
 begin
    select 1 as [not yet implemented]
 end
@@ -9,8 +9,11 @@ go
 set noexec off
 go
 
-CREATE PROCEDURE [RPT].[GetCFAADVISORCASELOAD]
+alter PROCEDURE [dbo].[AdvisorCaseLoad_get]
 AS
+
+-- GetCFAADVISORCASELOAD
+
 	SET NOCOUNT ON	
 
 		

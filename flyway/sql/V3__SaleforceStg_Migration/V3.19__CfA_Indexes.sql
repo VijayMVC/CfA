@@ -17,7 +17,7 @@ CREATE INDEX [IX_Student_Project_Action__c_Status_End__c]					 ON [CfA].[dbo].[S
 CREATE INDEX [IX_Student_Project_Action__c_Student_Project__c_Status_End__c] ON [CfA].[dbo].[Student_Project_Action__c] ([Student_Project__c], [Status_End__c]);
 
 CREATE INDEX [IX_task_CreatedDate_WhoId_CallObject] ON [CfA].[dbo].[task] ([CreatedDate], [WhoId],[CallObject]) INCLUDE ([Description], [CallDisposition], [Call_Duration_in_Minutes__c]);
-CREATE INDEX [IX_task_CallObject]					ON [CfA].[dbo].[task] ([CallObject]) INCLUDE ([Description], [CreatedDate], [WhoId], [CallDisposition], [Call_Duration_in_Minutes__c]);
+CREATE INDEX [IX_task_CallObject_desc]					ON [CfA].[dbo].[task] ([CallObject]) INCLUDE ([Description], [CreatedDate], [WhoId], [CallDisposition], [Call_Duration_in_Minutes__c]);
 
 CREATE INDEX [IX_Contact_Colleague_ID__c] ON [CfA].[dbo].[Contact] ([Colleague_ID__c]);
 

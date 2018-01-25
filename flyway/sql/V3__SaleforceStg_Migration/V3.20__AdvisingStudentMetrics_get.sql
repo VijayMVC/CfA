@@ -1,7 +1,7 @@
-if exists (select 1 from sys.objects where object_id = object_id('dbo.CfA_Student_Metrics'))
+if exists (select 1 from sys.objects where object_id = object_id('dbo.AdvisingStudentMetrics_get'))
    set noexec on
 go
-create procedure dbo.[CfA_Student_Metrics] as
+create procedure dbo.[AdvisingStudentMetrics_get] as
 begin
    select 1 as [not yet implemented]
 end
@@ -9,7 +9,9 @@ go
 set noexec off
 go
 
-CREATE PROC [dbo].[CfA_Student_Metrics]
+alter Procedure [dbo].[AdvisingStudentMetrics_get] as
+
+-- CFA_Student_Metrics
 
 SET NOCOUNT ON;
 

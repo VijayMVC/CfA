@@ -1,7 +1,7 @@
-if exists (select 1 from sys.objects where object_id = object_id('dbo.CFA_60%TERM_WITHDRAWAL_REPORT'))
+if exists (select 1 from sys.objects where object_id = object_id('dbo.SSWithdrawalReport_get'))
    set noexec on
 go
-create procedure dbo.[CFA_60%TERM_WITHDRAWAL_REPORT] as
+create procedure dbo.[SSWithdrawalReport_get] as
 begin
    select 1 as [not yet implemented]
 end
@@ -9,8 +9,10 @@ go
 set noexec off
 go
 
-CREATE PROC [dbo].[CFA_60%TERM_WITHDRAWAL_REPORT]
+alter procedure [dbo].[SSWithdrawalReport_get]
 AS
+
+-- CFA_60%TERM_WITHDRAWAL_REPORT
 
 SELECT [ColleagueID] ,
         WithdrawalDate ,
