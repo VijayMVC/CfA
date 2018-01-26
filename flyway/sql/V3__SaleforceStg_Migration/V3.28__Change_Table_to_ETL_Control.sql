@@ -1,0 +1,1 @@
+sp_rename 'ControlTable', 'ETL_Control';
