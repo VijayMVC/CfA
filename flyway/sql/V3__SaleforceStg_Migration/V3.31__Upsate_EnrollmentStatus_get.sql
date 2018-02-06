@@ -53,4 +53,3 @@ and a.name <> 'SW test Account'
 
 GO
 
-
