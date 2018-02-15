@@ -1,4 +1,3 @@
-
 CREATE TABLE [dbo].[Campaign] (
     [Id] nvarchar(18),
     [Name] nvarchar(121),
