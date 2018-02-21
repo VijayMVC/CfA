@@ -11,6 +11,8 @@ go
 
 GRANT EXECUTE ON DaystoGoalMastery_get TO PUBLIC;
 
+GO
+
 alter proc [dbo].[DaystoGoalMastery_get] as
 
 SELECT SGT.[SFDC_SGT_ID__c],SGT.Level_3_Mastery__c as 'Purple Path', SGT.[Transfer__c] ,p.[Colleague_Course_Program_Code__c],SGT.[Colleague_ID_From_Student__c], SGT.[Goal_Name__c],pg.[Program_Title__c],SGT.[Goal_Start_Date__c],SGT.Date_Mastered__c as 'Date Mastered',datediff (d,[Goal_Start_Date__c],SGT.Date_Mastered__c) 'Number of Days to Mastery'
