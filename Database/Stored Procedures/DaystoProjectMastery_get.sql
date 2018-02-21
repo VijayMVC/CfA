@@ -1,7 +1,7 @@
-if exists (select 1 from sys.objects where object_id = object_id('DaystoGoalMastery_get'))
+if exists (select 1 from sys.objects where object_id = object_id('DaystoProjectMastery_get'))
    set noexec on
 go
-create procedure dbo.[DaystoGoalMastery_get] as
+create procedure dbo.[DaystoProjectMastery_get] as
 begin
    select 1 as [not yet implemented]
 end
@@ -9,11 +9,11 @@ go
 set noexec off
 go
 
-GRANT EXECUTE ON DaystoGoalMastery_get TO PUBLIC;
+GRANT EXECUTE ON DaystoProjectMastery_get TO PUBLIC;
 
 GO
 
-alter proc [dbo].[DaystoGoalMastery_get] as
+alter proc [dbo].[DaystoProjectMastery_get] as
 
 select c.Colleague_Id__C,p.[Colleague_Course_Program_Code__c],sp.[Number_Submitted__c],sp.Date_Submitted__c,sp.Date_Mastered__c as 'Date Mastered', sp.[SFDC_Student_Project_ID__c],proj.[Project_Name__c],pg.[Path_Type__c] AS 'Path', pg.[Program_Title__c],datediff (d,sp.Date_Submitted__c,sp.Date_Mastered__c) 'Number of Days to Mastery'
 from [Student_Project__c] sp
