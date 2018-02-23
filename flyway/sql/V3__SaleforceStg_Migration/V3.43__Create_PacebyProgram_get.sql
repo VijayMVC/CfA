@@ -1,7 +1,7 @@
-if exists (select 1 from sys.objects where object_id = object_id('[PacebyProgram_get] '))
+if exists (select 1 from sys.objects where object_id = object_id('PacebyProgram_get'))
    set noexec on
 go
-create procedure dbo.[PacebyProgram_get]  as
+create procedure dbo.[PacebyProgram_get] as
 begin
    select 1 as [not yet implemented]
 end
@@ -9,7 +9,7 @@ go
 set noexec off
 go
 
-GRANT EXECUTE ON [PacebyProgram_get]  TO PUBLIC;
+GRANT EXECUTE ON PacebyProgram_get TO PUBLIC;
 
 GO
 
