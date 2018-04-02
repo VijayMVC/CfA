@@ -1,7 +1,7 @@
-if exists (select 1 from sys.objects where object_id = object_id('dbo.AdvisorCaseLoad_get'))
+if exists (select 1 from sys.objects where object_id = object_id('[AdvisorCaseLoad_get] '))
    set noexec on
 go
-create procedure dbo.[AdvisorCaseLoad_get] as
+create procedure dbo.[AdvisorCaseLoad_get]  as
 begin
    select 1 as [not yet implemented]
 end
@@ -9,26 +9,7 @@ go
 set noexec off
 go
 
-alter PROCEDURE [dbo].[AdvisorCaseLoad_get]
-AS
-
--- GetCFAADVISORCASELOAD
-
-	SET NOCOUNT ON	
-
-		
-	/*----------------------------------------------------------------------------------------------------
-	     Author:        SNHU\s.boyer1
-	     Description:   
-	  
-	     Notes:
-	  
-	     Modification Log:
-	         Date:        Made by:        Description:
-	         10/25/2017    Faby			Report used by CFA Coaches and Dan P.'s team to assign students to advisors
-	  
-	 ----------------------------------------------------------------------------------------------------*/
-
+alter proc [dbo].[AdvisorCaseLoad_get] as
 
 
 DECLARE @CFANextTerm VARCHAR(10),
@@ -70,5 +51,3 @@ ORDER BY [C].[Primary_Coach_Fullname_Text__c];
 
 
 GO
-
-
