@@ -1,4 +1,4 @@
-if exists (select 1 from sys.objects where object_id = object_id('[AdvisorCaseLoad_get] '))
+if exists (select 1 from sys.objects where object_id = object_id('AdvisorCaseLoad_get'))
    set noexec on
 go
 create procedure dbo.[AdvisorCaseLoad_get]  as
